@@ -20,11 +20,13 @@ fi
 [[ -z "${VCS_VERSION}" ]]   && VCS_VERSION=""
 [[ -z "${VCS_BIN}" ]]       && VCS_BIN="${VCS_VERSION} vcs"
 
-flags="-full64 -kdb "
+flags="-full64 -kdb  "
+#fsim flags
+flags+="+vcs+fsdbon -fsim=portfaults -notice -fsim -fsim=dut:tb_cheshire_soc "
 # Set default to fast simulation flags.
 if [ -z "${VCSARGS}" ]; then
     # Use -debug_access+all for waveform debugging
-    flags+="-O2 -debug_access=r -debug_region=1,${TESTBENCH} "
+    flags+="-O2 -debug_access+all -lca  " #-debug_region=1,${TESTBENCH}
 fi
 
 flags+="-cpp ${CXX_PATH} "
@@ -54,4 +56,7 @@ ${VCS_BIN} ${flags} ../src/elfloader.cpp ${TESTBENCH} | tee elaborate.log
 
 # Start simulation
 printf ${COLOR_BLUE}"${VCS_VERSION} ${VERDI_VERSION} ./simv ${pargs}"${COLOR_NC}"\n"
-${VCS_VERSION} ${VERDI_VERSION} ./simv ${pargs} | tee simulate.log
+
+ 
+
+ ./simv  -no_save  ${pargs} | tee simulate.log

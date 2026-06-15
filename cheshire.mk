@@ -6,7 +6,7 @@
 # Christopher Reinwardt <creinwar@student.ethz.ch>
 # Paul Scheffler <paulsc@iis.ee.ethz.ch>
 
-BENDER ?= bender
+#BENDER ?= bender
 VLOGAN ?= vlogan
 
 # Caution: Questasim requires this to point to the *actual* compiler install path

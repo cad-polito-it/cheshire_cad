@@ -5,6 +5,7 @@
 // Thomas Benz <tbenz@iis.ee.ethz.ch>
 
 /// This package contains parameters used in the simulation environment
+ `timescale 1ns/1ns
 package tb_cheshire_pkg;
 
     import cheshire_pkg::*;
@@ -34,11 +35,17 @@ package tb_cheshire_pkg;
       return ret;
     endfunction
 
+    function automatic cheshire_cfg_t gen_cheshire_asic_cfg();
+      cheshire_cfg_t ret = AsicCfg;
+      return ret;
+    endfunction
+
     // Number of Cheshire configurations
-    localparam int unsigned NumCheshireConfigs = 32'd4;
+    localparam int unsigned NumCheshireConfigs = 32'd5;
 
     // Assemble a configuration array indexed by a numeric parameter
     localparam cheshire_cfg_t [NumCheshireConfigs-1:0] TbCheshireConfigs = {
+        gen_cheshire_asic_cfg(),   //4: asic 
         gen_cheshire_vclic_cfg(), // 3: vCLIC-enabled configuration
         gen_cheshire_clic_cfg(),  // 2: CLIC-enabled configuration
         gen_cheshire_rt_cfg(),    // 1: RT-enabled configuration

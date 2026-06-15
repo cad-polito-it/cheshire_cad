@@ -526,6 +526,51 @@ package cheshire_pkg;
     return ret;
   endfunction
 
+  function automatic config_pkg::cva6_user_cfg_t gen_cva6_AsicCfg(cheshire_cfg_t cfg);
+    //doub_bt SizeSpm = get_llc_size(cfg);
+    doub_bt SizeSpm = 16;
+    doub_bt SizeLlcOut = cfg.LlcOutRegionEnd - cfg.LlcOutRegionStart;
+    doub_bt CieBase   = cfg.Cva6ExtCieOnTop ? 64'h8000_0000 - cfg.Cva6ExtCieLength : 64'h2000_0000;
+    doub_bt NoCieBase = cfg.Cva6ExtCieOnTop ? 64'h2000_0000 : 64'h2000_0000 + cfg.Cva6ExtCieLength;
+    // Base our config on the upstream default for this variant
+    config_pkg::cva6_user_cfg_t ret = cva6_config_pkg::cva6_cfg;
+    // Modify what we need to
+    ret.AxiAddrWidth          = cfg.AddrWidth;
+    ret.AxiDataWidth          = cfg.AxiDataWidth;
+    ret.AxiIdWidth            = Cva6IdWidth;
+    ret.AxiUserWidth          = cfg.AxiUserWidth;
+    ret.CvxifEn               = 0;
+    ret.DmBaseAddress         = AmDbg;
+    ret.HaltAddress           = 'h800; // Relative to AmDbg
+    ret.ExceptionAddress      = 'h810; // Relative to AmDbg
+    ret.NrNonIdempotentRules  = 2;   // Periphs, ExtNonCI;
+    ret.NonIdempotentAddrBase = {64'h0000_0000, NoCieBase};
+    ret.NOCType               = config_pkg::NOC_TYPE_AXI4_ATOP;
+    ret.NonIdempotentLength   = {64'h1000_0000, 64'h6000_0000 - cfg.Cva6ExtCieLength};
+    ret.NrExecuteRegionRules  = 6;   // Debug, Bootrom, SPM, SPM Uncached, LLCOut, ExtCI;
+    ret.ExecuteRegionAddrBase = {AmDbg,     AmBrom,    AmSpm,   AmSpmUnc, cfg.LlcOutRegionStart, CieBase};
+    ret.ExecuteRegionLength   = {64'h40000, 64'h40000, SizeSpm, SizeSpm,  SizeLlcOut,            cfg.Cva6ExtCieLength};
+    ret.NrCachedRegionRules   = 3;   // CachedSPM, LLCOut, ExtCI;
+    ret.CachedRegionAddrBase  = {AmSpm,   cfg.LlcOutRegionStart,  CieBase};
+    ret.CachedRegionLength    = {SizeSpm, SizeLlcOut,             cfg.Cva6ExtCieLength};
+    ret.FpgaEn                = 0;
+    ret.DebugEn               = 1;
+    ret.RVSCLIC               = cfg.Clic;
+    ret.RVXHCLIC              = cfg.ClicVsclic;
+    ret.CLICNumInterruptSrc   = NumCoreIrqs + NumIntIntrs + cfg.NumExtClicIntrs;
+    // TODO: Should some things be removed from the main config?
+    // TODO: Should other things be added to the main config?
+    // TODO: Tune missing parameters of interest (esp. cache and interconnect) properly
+    ret.RASDepth              = cfg.Cva6RASDepth;
+    ret.BTBEntries            = cfg.Cva6BTBEntries;
+    ret.BHTEntries            = cfg.Cva6BHTEntries;
+    ret.NrPMPEntries          = cfg.Cva6NrPMPEntries;
+    $display("\nUSING ASIC CONFIGURATION\n");
+    // Return modified config
+    return ret;
+  endfunction
+
+
   ////////////////
   //  Defaults  //
   ////////////////
@@ -653,5 +698,57 @@ package cheshire_pkg;
     // All non-set values should be zero
     default: '0
   };
+
+localparam cheshire_cfg_t AsicCfg = '{
+  default: DefaultCfg,
+  // ========================
+  // Features (tutto off)
+  // ========================
+  //Bootrom     : 0
+  //Uart        : 0,
+  //I2c         : 0,
+  //SpiHost     : 0,
+  //Gpio        : 0,
+  //Dma         : 0,
+  ////SerialLink  : 0,
+  //Vga         : 0,
+  //Usb         : 0,
+  //AxiRt       : 0
+  //IrqRouter   : 0,
+  ////Interrupts
+  //Clic              : 0,
+  //NumExtClicIntrs   : 0
+
+  // Debug
+  //DbgMaxReqs        : 0,
+  //DbgMaxReadTxns    : 0,
+  //DbgMaxWriteTxns   : 0,
+
+  // ========================
+  // LLC → bypass + neutra
+  // ========================
+  LlcNotBypass      : 0,
+  LlcOutRegionStart : 64'h0,
+  LlcOutRegionEnd   : 64'h0,
+  LlcMaxReadTxns    : 0,
+  LlcMaxWriteTxns   : 0
+
+  // ========================
+  // SPM / memoria
+  // ========================
+
+
+  // ========================
+  // AXI semplificato
+  // ========================
+  //AxiMaxMstTrans : 4,
+  //AxiMaxSlvTrans : 4,
+
+  // ========================
+  // Sicurezza/debug runtime
+  // ========================
+  //BusErr : 1
+
+};
 
 endpackage

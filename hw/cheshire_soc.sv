@@ -157,17 +157,17 @@ module cheshire_soc import cheshire_pkg::*; #(
   assign intr.intn.zero  = 0;
 
   // External interrupts must be synchronized to this domain
-  for (genvar i = 0; i <= iomsb(Cfg.NumExtInIntrs); i++) begin : gen_ext_in_intr_syncs
-    sync #(
-      .STAGES     ( Cfg.NumExtIntrSyncs ),
-      .ResetValue ( 1'b0 )
-    ) i_ext_intr_sync (
-      .clk_i,
-      .rst_ni,
-      .serial_i ( intr_ext_i[i] ),
-      .serial_o ( intr.ext[i]   )
-    );
-  end
+  //for (genvar i = 0; i <= iomsb(Cfg.NumExtInIntrs); i++) begin : gen_ext_in_intr_syncs
+  //  sync #(
+  //    .STAGES     ( Cfg.NumExtIntrSyncs ),
+  //    .ResetValue ( 1'b0 )
+  //  ) i_ext_intr_sync (
+  //    .clk_i,
+  //    .rst_ni,
+  //    .serial_i ( intr_ext_i[i] ),
+  //    .serial_o ( intr.ext[i]   )
+  //  );
+  //end
 
   // Connect routed outgoing interrupts to external targets (implicit truncation)
   if (Cfg.NumExtOutIntrTgts) begin : gen_ext_out_intrs
@@ -561,8 +561,20 @@ module cheshire_soc import cheshire_pkg::*; #(
 
   `CHESHIRE_TYPEDEF_AXI_CT(axi_cva6, addr_t, cva6_id_t, axi_data_t, axi_strb_t, axi_user_t)
 
-  localparam config_pkg::cva6_user_cfg_t Cva6Cfg = gen_cva6_cfg(Cfg);
+ localparam config_pkg::cva6_user_cfg_t Cva6Cfg = gen_cva6_cfg(Cfg);
+//localparam config_pkg:: cva6_user_cfg_t Cva6Cfg = gen_cva6_AsicCfg(Cfg);
 
+  localparam int unsigned ChsAxiAddrLsb = $clog2(Cfg.AxiDataWidth/8);
+
+initial begin
+  $display("[CHS] AddrWidth=%0d AxiDataWidth=%0d AxiAddrLSB=%0d Cva6.AxiAddrWidth=%0d",
+           Cfg.AddrWidth, Cfg.AxiDataWidth, ChsAxiAddrLsb, Cva6Cfg.AxiAddrWidth);
+
+  if (!(Cfg.AddrWidth > ChsAxiAddrLsb)) begin
+    $fatal(1, "[CHS] BAD CFG: AddrWidth (%0d) must be > AxiAddrLSB (%0d)",
+           Cfg.AddrWidth, ChsAxiAddrLsb);
+  end
+end
   // Boot from boot ROM only if available, otherwise from platform ROM
   localparam logic [63:0] BootAddr = 64'(Cfg.Bootrom ? AmBrom : Cfg.PlatformRom);
 

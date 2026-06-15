@@ -5,6 +5,13 @@
 // Nicole Narr <narrn@student.ethz.ch>
 // Christopher Reinwardt <creinwar@student.ethz.ch>
 
+  //////////////////// dump ////////////////////
+ //`define dump_here tb_cheshire_soc.fix.dut.gen_cva6_cores[0].i_core_cva6.ex_stage_i.alu_i
+ ///////////////////////////////////////////////
+
+
+import dump_strobe_pkg::*;
+
 module tb_cheshire_soc #(
   /// The selected simulation configuration from the `tb_cheshire_pkg`.
   parameter int unsigned SelectedCfg = 32'd0,
@@ -52,9 +59,15 @@ module tb_cheshire_soc #(
           fix.vip.uart_debug_elf_run_and_wait(preload_elf, exit_code);
         end 3: begin // JTAG with direct preload
           fix.vip.jtag_init();
+
           fix.vip.jtag_elf_run(preload_elf, 1);
+          $dumpon; //dumping
+          start_inject = 1'b1;
+
           fix.vip.jtag_wait_for_eoc(exit_code);
-        end default: begin
+          $dumpoff;
+        end
+        default: begin
           $fatal(1, "Unsupported preload mode %d (reserved)!", boot_mode);
         end
       endcase
@@ -70,6 +83,14 @@ module tb_cheshire_soc #(
     wait (fix.vip.uart_reading_byte == 0);
 
     $finish;
+    //$stop;
   end
 
+initial begin 
+    $dumpfile("dumped.evcd");
+    $dumpvars(0,`dump_strobe_here_regfile);
+    $dumpoff;
+end
+
 endmodule
+

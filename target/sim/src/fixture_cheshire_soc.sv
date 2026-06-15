@@ -21,6 +21,11 @@ module fixture_cheshire_soc #(
 
   `CHESHIRE_TYPEDEF_ALL(, DutCfg)
 
+  initial begin
+  $display("[CFG] SelectedCfg=%0d AddrWidth=%0d AxiDataWidth=%0d AxiRt=%0d",
+           SelectedCfg, DutCfg.AddrWidth, DutCfg.AxiDataWidth, DutCfg.AxiRt);
+end
+
   ///////////
   //  DUT  //
   ///////////

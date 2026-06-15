@@ -14,6 +14,8 @@ nonfree/
 # Documentation site
 site/
 
+cad_guide.txt
+
 # Software build files
 *.bin
 *.dump
@@ -27,8 +29,9 @@ site/
 sw/deps/.patched
 
 # Test models
-target/sim/models
-target/sim/dramsys
+target/sim
+target/fsim/vc_zoix
+
 
 # VSIM generated files
 target/sim/vsim/compile.*.tcl
