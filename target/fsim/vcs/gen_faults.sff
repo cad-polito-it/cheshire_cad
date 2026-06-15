@@ -1,0 +1,6 @@
+FaultGenerate
+{
+
+NA [0,1] { PORT "tb_cheshire_soc.fix.dut.gen_cva6_cores[0].i_core_cva6.ex_stage_i.alu_i.**" }
+
+}

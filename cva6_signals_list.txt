@@ -1,0 +1,33 @@
+# CVA6 signal list extracted from target/sim/vsim/cva_dma_debug.vcd
+# One signal per line (hierarchical path).
+
+# Program counters
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/issue_stage_i/i_issue_read_operands/pc_o
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/id_stage_i/genblk2[0]/decoder_i/pc_i[63:0]
+
+# Register-file related (operand read paths)
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/issue_stage_i/i_issue_read_operands/operand_a_regfile
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/issue_stage_i/i_issue_read_operands/operand_b_regfile
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/issue_stage_i/i_issue_read_operands/operand_c_regfile
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/issue_stage_i/i_issue_read_operands/csr_valid_n
+
+# Commit/CSR interface activity
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/commit_stage_i/commit_csr_o
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/commit_stage_i/csr_op_o
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/commit_stage_i/csr_wdata_o
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/commit_stage_i/csr_exception_i
+
+# CSR regfile state
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/epc_o
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/mepc_q
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/mepc_d
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/mtvec_q
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/mtvec_d
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/mscratch_q
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/mscratch_d
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/mstatus_q
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/mstatus_d
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/dpc_q
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/dpc_d
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/csr_we
+/tb_cheshire_soc/fix/dut/gen_cva6_cores[0]/i_core_cva6/csr_regfile_i/csr_wdata

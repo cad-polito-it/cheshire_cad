@@ -1,0 +1,16 @@
+FaultGenerate
+{
+
+    #NA [0,1] { PORT "tb_cheshire_soc.fix.dut.gen_cva6_cores[0].i_core_cva6.ex_stage_i.alu_i.**" }
+
+NA [0,1] { PORT "tb_cheshire_soc.fix.dut.gen_cva6_cores[0].i_core_cva6.issue_stage_i.i_issue_read_operands.gen_asic_regfile.i_ariane_regfile.**" }
+NA [0,1] { VARI "tb_cheshire_soc.fix.dut.gen_cva6_cores[0].i_core_cva6.issue_stage_i.i_issue_read_operands.gen_asic_regfile.i_ariane_regfile.**" }
+NA [0,1] { ARRY "tb_cheshire_soc.fix.dut.gen_cva6_cores[0].i_core_cva6.issue_stage_i.i_issue_read_operands.gen_asic_regfile.i_ariane_regfile.**" }
+
+    #NA [0,1] { PORT "tb_cheshire_soc.fix.dut.**" }
+}
+
+Strobe {
+        "tb_cheshire_soc.fix.dut"
+}
+

@@ -1,0 +1,74 @@
+diff --git a/target/sim/src/tb_cheshire_soc.sv b/target/sim/src/tb_cheshire_soc.sv
+index 57a15e8..b12b966 100644
+--- a/target/sim/src/tb_cheshire_soc.sv
++++ b/target/sim/src/tb_cheshire_soc.sv
+@@ -50,6 +50,10 @@ module tb_cheshire_soc #(
+           fix.vip.slink_wait_for_eoc(exit_code);
+         end 2: begin  // UART
+           fix.vip.uart_debug_elf_run_and_wait(preload_elf, exit_code);
++        end 3: begin // JTAG with direct preload
++          fix.vip.jtag_init();
++          fix.vip.jtag_elf_run(preload_elf, 1);
++          fix.vip.jtag_wait_for_eoc(exit_code);
+         end default: begin
+           $fatal(1, "Unsupported preload mode %d (reserved)!", boot_mode);
+         end
+diff --git a/target/sim/src/vip_cheshire_soc.sv b/target/sim/src/vip_cheshire_soc.sv
+index cc4c480..e660ff7 100644
+--- a/target/sim/src/vip_cheshire_soc.sv
++++ b/target/sim/src/vip_cheshire_soc.sv
+@@ -193,6 +193,21 @@ module vip_cheshire_soc import cheshire_pkg::*; #(
+     boot_mode = mode;
+   endtask
+ 
++  ////////////////////
++  // Direct Preload //
++  ////////////////////
++
++  // Load a hexfile
++  task automatic preload_hexfile(input string hexfile);
++    $readmemh(hexfile, gen_no_dramsys.i_dram_sim_mem.mem);
++  endtask
++
++  task automatic direct_preload(input string binary);
++    $display("[TB] Preloading binary %s", binary);
++    preload_hexfile(binary);
++    $display("[TB] Preload done");
++  endtask
++
+   ////////////
+   //  JTAG  //
+   ////////////
+@@ -351,7 +366,7 @@ module vip_cheshire_soc import cheshire_pkg::*; #(
+   endtask
+ 
+   // Halt the core and preload a binary
+-  task automatic jtag_elf_halt_load(input string binary, output doub_bt entry);
++  task automatic jtag_elf_halt();
+     dm::dmstatus_t status;
+     // Wait until bootrom initialized LLC
+     if (DutCfg.LlcNotBypass) begin
+@@ -364,14 +379,19 @@ module vip_cheshire_soc import cheshire_pkg::*; #(
+     do jtag_dbg.read_dmi_exp_backoff(dm::DMStatus, status);
+     while (~status.allhalted);
+     $display("[JTAG] Halted hart 0");
+-    // Preload binary
+-    jtag_elf_preload(binary, entry);
+   endtask
+ 
+   // Run a binary
+-  task automatic jtag_elf_run(input string binary);
++  task automatic jtag_elf_run(input string binary, input bit direct_prel=1'b0);
+     doub_bt entry;
+-    jtag_elf_halt_load(binary, entry);
++    jtag_elf_halt();
++    // Preload binary
++    if (!direct_prel) jtag_elf_preload(binary, entry);
++    // Direct preload with readmem
++    else begin
++      direct_preload(binary);
++      entry = 64'h8000_0000;
++    end
+     // Repoint execution
+     jtag_write(dm::Data1, entry[63:32]);
+     jtag_write(dm::Data0, entry[31:0]);
